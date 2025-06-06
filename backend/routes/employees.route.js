@@ -14,6 +14,10 @@ import {
   getAllAssignedShifts,
   updateShift,
   deleteShift,
+  clockin,
+  clockout,
+  singleAttendance,
+  getAllEmployeesWithAttendance
 } from "./routes.js";
 
 const router = express.Router();
@@ -56,3 +60,17 @@ router.put("/shift/:id", updateShift); //works
 
 // Delete a shift by ID
 router.delete("/shift/:id", deleteShift); //works
+
+// Employee clock in
+router.post("/clockin/:id", clockin); // works
+
+// Employee clock out
+router.post("/clockout/:id", clockout); // works
+
+// Get all employees with attendance records
+router.get("/attendance", getAllEmployeesWithAttendance); // works
+
+// Get attendance for a single employee
+router.get("/attendance/:id", singleAttendance); // works
+
+
