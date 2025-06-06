@@ -9,6 +9,11 @@ import {
   getOneEmployee,
   updateEmployee,
   deleteEmployee,
+  assignShift,
+  getAssignedShift,
+  getAllAssignedShifts,
+  updateShift,
+  deleteShift,
 } from "./routes.js";
 
 const router = express.Router();
@@ -36,3 +41,18 @@ router.put("/updateEmployee/:id", updateEmployee); //works
 
 // Delete employee
 router.delete("/deleteEmployee/:id", deleteEmployee); //works
+
+// Assign shift
+router.post("/assignShift/:id", assignShift); //works
+
+// Get assigned shift for single employee
+router.get("/assignedShift/:id", getAssignedShift); //works
+
+// Get all assigned shifts
+router.get("/assignedShift", getAllAssignedShifts); //works
+
+// Update a shift by ID
+router.put("/shift/:id", updateShift); //works
+
+// Delete a shift by ID
+router.delete("/shift/:id", deleteShift); //works
