@@ -17,7 +17,9 @@ import {
   clockin,
   clockout,
   singleAttendance,
-  getAllEmployeesWithAttendance
+  getAllEmployeesWithAttendance,
+  getAllEmployeesWithStatus,
+  singleStatus
 } from "./routes.js";
 
 const router = express.Router();
@@ -46,6 +48,19 @@ router.put("/updateEmployee/:id", updateEmployee); //works
 // Delete employee
 router.delete("/deleteEmployee/:id", deleteEmployee); //works
 
+// Employee clock in
+router.post("/clockin/:id", clockin); // works
+
+// Employee clock out
+router.post("/clockout/:id", clockout); // works
+
+// Get all employees with attendance records
+router.get("/attendance", getAllEmployeesWithAttendance); // works
+
+// Get attendance for a single employee
+router.get("/attendance/:id", singleAttendance); // works
+
+
 // Assign shift
 router.post("/assignShift/:id", assignShift); //works
 
@@ -61,16 +76,12 @@ router.put("/shift/:id", updateShift); //works
 // Delete a shift by ID
 router.delete("/shift/:id", deleteShift); //works
 
-// Employee clock in
-router.post("/clockin/:id", clockin); // works
+// Get all employees with status info
+router.get("/status", getAllEmployeesWithStatus); // works
 
-// Employee clock out
-router.post("/clockout/:id", clockout); // works
+// Get status info for a single employee
+router.get("/status/:id", singleStatus); // works
 
-// Get all employees with attendance records
-router.get("/attendance", getAllEmployeesWithAttendance); // works
-
-// Get attendance for a single employee
-router.get("/attendance/:id", singleAttendance); // works
+export default router;
 
 
