@@ -196,3 +196,97 @@ async function clockout(req, res) {
     res.status(500).json({ message: "Clock-out failed", error });
   }
 }
+// ================= Commit 4: Shift Assignment and Management =================
+async function assignShift(req, res) {
+  const { date, shiftType, shiftId } = req.body;
+  const { id } = req.params;
+
+  try {
+    const existingId = await Employee.findOne({ shiftId });
+    if (existingId) return res.status(400).json({ message: "ID already in use" });
+
+    const shift = new Shift({ id: shiftId, employeeId: Number(id), date, shiftType });
+    const savedShift = await shift.save();
+
+    return res.status(201).json({ message: "Shift assigned successfully", shift: savedShift });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error assigning shift", error });
+  }
+}
+
+async function getAssignedShift(req, res) {
+  const { id } = req.params;
+  try {
+    const shift = await Shift.find({ employeeId: id });
+    if (!shift) return res.status(404).json({ message: "Shift not found for employee" });
+    return res.status(200).json({ message: "Shift(s) found successfully", shifts: shift });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error retrieving shift", error });
+  }
+}
+
+async function getAllAssignedShifts(req, res) {
+  try {
+    const shifts = await Shift.find();
+    if (!shifts.length) return res.status(404).json({ message: "No assigned shifts found" });
+    return res.status(200).json(shifts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error retrieving shifts", error });
+  }
+}
+
+async function updateShift(req, res) {
+  const { id } = req.params;
+  const { date, shiftType, attendance } = req.body;
+
+  try {
+    const updateFields = {};
+    if (date) updateFields.date = date;
+    if (shiftType) updateFields.shiftType = shiftType;
+
+    let updatedShift = await Shift.findOneAndUpdate(
+      { id },
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (attendance && attendance.length > 0) {
+      await Shift.updateOne(
+        { id },
+        { $push: { attendance: { $each: attendance } } }
+      );
+      updatedShift = await Shift.findOne({ id });
+    }
+
+    if (!updatedShift) return res.status(404).json({ message: "Shift not found" });
+
+    return res.status(200).json({
+      message: "Shift updated",
+      shift: {
+        id: updatedShift.id,
+        date: updatedShift.date,
+        shiftType: updatedShift.shiftType,
+        employeeId: updatedShift.employeeId,
+        attendance: updatedShift.attendance,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error updating shift", error });
+  }
+}
+
+async function deleteShift(req, res) {
+  const { id } = req.params;
+  try {
+    const deletedShift = await Shift.findOneAndDelete({ id });
+    if (!deletedShift) return res.status(404).json({ message: "Shift not found" });
+    return res.status(200).json({ message: "Shift deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error deleting shift", error });
+  }
+}
