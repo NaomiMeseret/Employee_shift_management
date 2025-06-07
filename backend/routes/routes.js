@@ -70,3 +70,52 @@ async function login(req, res) {
     return res.status(500).json({ message: "Login error", error });
   }
 }
+async function getOneEmployee(req, res) {
+  const { id } = req.params;
+  try {
+    const employee = await Employee.findOne({ id });
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    return res.status(200).json(employee);
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching employee", error });
+  }
+}
+
+async function getAllEmployees(req, res) {
+  try {
+    const employees = await Employee.find();
+    if (!employees.length) return res.status(404).json({ message: "No employees found" });
+    return res.status(200).json(employees);
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching employees", error });
+  }
+}
+
+async function updateEmployee(req, res) {
+  const { id } = req.params;
+  const { name, email, password, profilePicture, phone, position, shift, status, isAdmin } = req.body;
+  try {
+    const employee = await Employee.findOneAndUpdate(
+      { id },
+      { name, email, password, profilePicture, phone, position, shift, status, isAdmin },
+      { new: true }
+    );
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    return res.status(200).json(employee);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error updating employee", error });
+  }
+}
+
+async function deleteEmployee(req, res) {
+  const { id } = req.params;
+  try {
+    const employee = await Employee.findOneAndDelete({ id });
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    await Shift.deleteMany({ employeeId: Number(id) });
+    return res.status(200).json({ message: "Employee and their shifts deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting employee", error });
+  }
+}
