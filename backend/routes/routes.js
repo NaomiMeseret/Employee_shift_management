@@ -119,3 +119,80 @@ async function deleteEmployee(req, res) {
     return res.status(500).json({ message: "Error deleting employee", error });
   }
 }
+// ================= Commit 3: Clock-In / Clock-Out =================
+async function clockin(req, res) {
+  const { id } = req.params;
+  const { shiftId } = req.body;
+  const currentTime = new Date().toLocaleTimeString();
+  const date = new Date().toISOString().split("T")[0];
+
+  try {
+    const employee = await Employee.findOne({ id });
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
+
+    const shift = await Shift.findOne({ id: shiftId, employeeId: Number(id) });
+    if (!shift) return res.status(404).json({ message: "Shift not found for this employee" });
+
+    const existingClockIn = shift.attendance.find(
+      (a) => a.date === date && a.actionType === "Clock In"
+    );
+    if (existingClockIn) return res.status(400).json({ message: "Already clocked in today" });
+
+    shift.attendance.push({
+      actionType: "Clock In",
+      time: currentTime,
+      date,
+      status: "active"
+    });
+
+    employee.status = "active";
+    await employee.save();
+    await shift.save();
+
+    res.status(200).json({ message: "Clock-in successful", shift });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Clock-in failed", error });
+  }
+}
+
+async function clockout(req, res) {
+  const { id } = req.params;
+  const { shiftId } = req.body;
+  const currentTime = new Date().toLocaleTimeString();
+  const date = new Date().toISOString().split("T")[0];
+
+  try {
+    const employee = await Employee.findOne({ id });
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
+
+    const shift = await Shift.findOne({ id: shiftId, employeeId: Number(id) });
+    if (!shift) return res.status(404).json({ message: "Shift not found for this employee" });
+
+    const clockInRecord = shift.attendance.find(
+      (a) => a.date === date && a.actionType === "Clock In"
+    );
+    if (!clockInRecord) return res.status(400).json({ message: "You haven't clocked in today" });
+
+    const existingClockOut = shift.attendance.find(
+      (a) => a.date === date && a.actionType === "Clock Out"
+    );
+    if (existingClockOut) return res.status(400).json({ message: "Already clocked out today" });
+
+    shift.attendance.push({
+      actionType: "Clock Out",
+      time: currentTime,
+      date,
+      status: "on leave"
+    });
+
+    employee.status = "on leave";
+    await employee.save();
+    await shift.save();
+
+    res.status(200).json({ message: "Clock-out successful", shift });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Clock-out failed", error });
+  }
+}
