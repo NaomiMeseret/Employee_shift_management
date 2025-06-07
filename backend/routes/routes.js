@@ -290,3 +290,50 @@ async function deleteShift(req, res) {
     return res.status(500).json({ message: "Error deleting shift", error });
   }
 }
+// ================= Commit 5: Status, Attendance, and Logout =================
+async function singleStatus(req, res) {
+  const id = req.params.id;
+  try {
+    const employee = await Employee.findOne({ id }, "name id status");
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    return res.status(200).json(employee);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving employee", error });
+  }
+}
+
+async function getAllEmployeesWithStatus(req, res) {
+  try {
+    const employees = await Employee.find({}, "name id status");
+    if (!employees) return res.status(404).json({ message: "No employees found" });
+    return res.status(200).json(employees);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving employees", error });
+  }
+}
+
+async function singleAttendance(req, res) {
+  const { id } = req.params;
+  try {
+    const employee = await Employee.findOne({ id }, "name id attendance");
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    return res.status(200).json(employee);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving employee", error });
+  }
+}
+
+async function getAllEmployeesWithAttendance(req, res) {
+  try {
+    const employees = await Employee.find({}, "name id attendance");
+    if (!employees) return res.status(404).json({ message: "No employees found" });
+    return res.status(200).json(employees);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving employees", error });
+  }
+}
+
+async function logout(req, res) {
+  // Stub function for client-handled logout
+  return res.status(200).json({ message: "Logout successful" });
+}
