@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'presentation/screens/home_screen.dart';
 import 'presentation/screens/login_screen.dart';
-import 'presentation/screens/signup_screen.dart';
+ 
 import 'presentation/screens/admin/admin_home_screen.dart';
 import 'presentation/screens/admin/admin_employee_screen.dart';
 import 'presentation/screens/admin/admin_shift_screen.dart';
@@ -51,7 +51,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomeScreen(),
         '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
         '/employee': (context) => const EmployeeDashboardScreen(),
         
         // Admin routes
