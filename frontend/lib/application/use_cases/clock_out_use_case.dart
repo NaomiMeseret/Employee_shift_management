@@ -7,4 +7,4 @@ class ClockOutUseCase {
   Future<void> call(String employeeId, String shiftId) {
     return repository.clockOut(employeeId, shiftId);
   }
-}
+} 

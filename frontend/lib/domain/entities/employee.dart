@@ -18,4 +18,4 @@ class Employee {
     required this.status,
     required this.isAdmin,
   });
-}
+} 

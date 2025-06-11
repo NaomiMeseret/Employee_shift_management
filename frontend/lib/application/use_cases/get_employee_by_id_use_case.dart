@@ -8,4 +8,4 @@ class GetEmployeeByIdUseCase {
   Future<Employee> call(String id) {
     return repository.getEmployeeById(id);
   }
-}
+} 

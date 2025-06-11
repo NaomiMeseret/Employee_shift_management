@@ -8,4 +8,4 @@ class GetAllEmployeesUseCase {
   Future<List<Employee>> call() {
     return repository.getAllEmployees();
   }
-}
+} 

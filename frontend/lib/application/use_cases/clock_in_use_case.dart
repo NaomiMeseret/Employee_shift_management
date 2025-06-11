@@ -7,4 +7,4 @@ class ClockInUseCase {
   Future<void> call(String employeeId, String shiftId) {
     return repository.clockIn(employeeId, shiftId);
   }
-}
+} 

@@ -10,7 +10,7 @@ class DioClient {
     // Use different base URLs for web and mobile
     String baseUrl = kIsWeb 
         ? 'http://localhost:3000'  // For web - removed /api
-        :  'http://10.0.2.2:3000/api';  // For Android emulator - removed /api
+        : 'http://10.0.2.2:3000/api';  // For Android emulator - removed /api
 
     dio = Dio(
       BaseOptions(

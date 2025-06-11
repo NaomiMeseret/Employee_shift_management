@@ -43,7 +43,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 24),
               const Text(
                 'ShiftMaster',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -53,7 +56,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 24),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Email', style: TextStyle(fontWeight: FontWeight.w500)),
+                child: Text('Email',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -67,7 +71,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 12),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Password', style: TextStyle(fontWeight: FontWeight.w500)),
+                child: Text('Password',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -105,17 +110,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         },
                   child: authState.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-
-                      : const Text('Sign in', style: TextStyle(color: Colors.white)),
+                      : const Text('Sign in',
+                          style: TextStyle(color: Colors.white)),
                 ),
               ),
               const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/signup');
-                },
-                child: const Text("Don't have an account? Sign up"),
-              ),
               const SizedBox(height: 48),
               const Text(
                 '©2025 ShiftMaster. All rights reserved',

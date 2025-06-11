@@ -7,4 +7,4 @@ class UpdateEmployeePasswordUseCase {
   Future<void> call(String id, String currentPassword, String newPassword) {
     return repository.updateEmployeePassword(id, currentPassword, newPassword);
   }
-}
+} 

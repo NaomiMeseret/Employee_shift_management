@@ -18,4 +18,4 @@ class SignupUseCase {
       id: id,
     );
   }
-}
+} 

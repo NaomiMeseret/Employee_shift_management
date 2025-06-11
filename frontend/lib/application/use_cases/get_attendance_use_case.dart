@@ -8,4 +8,4 @@ class GetAttendanceUseCase {
   Future<List<Attendance>> call(String employeeId) {
     return repository.getAttendance(employeeId);
   }
-}
+} 

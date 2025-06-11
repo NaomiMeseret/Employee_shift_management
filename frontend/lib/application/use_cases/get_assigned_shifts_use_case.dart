@@ -8,4 +8,4 @@ class GetAssignedShiftsUseCase {
   Future<List<Shift>> call(String employeeId) {
     return repository.getAssignedShifts(employeeId);
   }
-}
+} 
