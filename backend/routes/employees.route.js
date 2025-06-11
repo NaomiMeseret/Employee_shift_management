@@ -1,26 +1,28 @@
 // routes/employee.routes.js
 import express from "express";
+
 import {
-  register,
-  login,
-  logout,
-  changePassword,
-  getAllEmployees,
-  getOneEmployee,
-  updateEmployee,
-  deleteEmployee,
   assignShift,
-  getAssignedShift,
-  getAllAssignedShifts,
-  updateShift,
-  deleteShift,
   clockin,
   clockout,
-  singleAttendance,
+  deleteEmployee,
+  getAllAssignedShifts,
+  getAllEmployees,
   getAllEmployeesWithAttendance,
   getAllEmployeesWithStatus,
-  singleStatus
+  getAssignedShift,
+  getOneEmployee,
+  login,
+  register,
+  singleAttendance,
+  singleStatus,
+  updateEmployee,
+  logout,
+  updateShift,
+  deleteShift,
+  changePassword
 } from "./routes.js";
+
 
 const router = express.Router();
 
@@ -30,58 +32,53 @@ router.post("/register", register); //works
 // Login
 router.post("/login", login); //works
 
-// Logout
+// Login
 router.post("/logout", logout); //works
 
 // Change password
 router.post("/changePassword/:id", changePassword); // works
 
-// Get all employees
+// Get all
 router.get("/employees", getAllEmployees); //works
 
-// Get one employee
+// Get one
 router.get("/employees/:id", getOneEmployee); //works
 
-// Update employee
+// Update
 router.put("/updateEmployee/:id", updateEmployee); //works
 
-// Delete employee
+// Delete
 router.delete("/deleteEmployee/:id", deleteEmployee); //works
 
-// Employee clock in
-router.post("/clockin/:id", clockin); // works
+//clock in
+router.post("/clockin/:id", clockin); //works
 
-// Employee clock out
-router.post("/clockout/:id", clockout); // works
+//clock out
+router.post("/clockout/:id", clockout); //works
 
-// Get all employees with attendance records
-router.get("/attendance", getAllEmployeesWithAttendance); // works
-
-// Get attendance for a single employee
-router.get("/attendance/:id", singleAttendance); // works
-
-
-// Assign shift
+//assign shift
 router.post("/assignShift/:id", assignShift); //works
 
-// Get assigned shift for single employee
+//get assigned shift for a single employee
 router.get("/assignedShift/:id", getAssignedShift); //works
 
-// Get all assigned shifts
+//get all assigned shifts
 router.get("/assignedShift", getAllAssignedShifts); //works
 
-// Update a shift by ID
+// update a shift by ID
 router.put("/shift/:id", updateShift); //works
 
-// Delete a shift by ID
+// delete a shift by ID
 router.delete("/shift/:id", deleteShift); //works
 
-// Get all employees with status info
-router.get("/status", getAllEmployeesWithStatus); // works
+//get all Employee with status
+router.get("/status", getAllEmployeesWithStatus); //works
 
-// Get status info for a single employee
-router.get("/status/:id", singleStatus); // works
+// get sigle employee with status
+router.get("/status/:id", singleStatus);
+//get all employees with attendance
+router.get("/attendance", getAllEmployeesWithAttendance); //works
+
+router.get("/attendance/:id", singleAttendance); //works
 
 export default router;
-
-
