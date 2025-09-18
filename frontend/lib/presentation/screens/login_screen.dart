@@ -54,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
               const SizedBox(height: 24),
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Email',
                     style: TextStyle(fontWeight: FontWeight.w500)),
@@ -69,7 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Password',
                     style: TextStyle(fontWeight: FontWeight.w500)),
@@ -115,7 +115,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const SizedBox(height: 48),
+              
+              // Sign Up Link
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Don\'t have an account? ',
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, '/signup'),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Color(0xFF2E5D47),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
               const Text(
                 '©2025 ShiftMaster. All rights reserved',
                 style: TextStyle(fontSize: 12, color: Colors.grey),
