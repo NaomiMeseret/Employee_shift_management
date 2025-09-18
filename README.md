@@ -21,9 +21,9 @@ This practical mobile application demonstrates **cross-platform mobile developme
 | ![Login](docs/screenshots/login.png) | ![Employee Home](docs/screenshots/employee-home.png) | ![Attendance](docs/screenshots/attendance.png) | ![MyShifts](docs/screenshots/my-shifts.png) |
 
 ### Employee Features
-| Profile Management | Settings & Preferences | Team Directory | Attendance History |
+| Profile Management | Settings & Preferences | Attendance History |
 |-------------------|----------------------|----------------|-------------------|
-| ![Profile](docs/screenshots/profile.png) | ![Settings](docs/screenshots/settings.png) | ![Team](docs/screenshots/team.png) | ![History](docs/screenshots/attendance-history.png) |
+| ![Profile](docs/screenshots/profile.png) | ![Settings](docs/screenshots/settings.png) | ![History](docs/screenshots/attendance-history.png) |
 
 ### Admin Features
 | Admin Dashboard | Employee Management | Analytics & Reports | Shift Assignment |
