@@ -1,0 +1,2 @@
+/Users/naomi/Desktop/Employee_shift_management_flutter/frontend/android/app/.cxx/Debug/2c42u132/x86_64/CMakeFiles/edit_cache.dir
+/Users/naomi/Desktop/Employee_shift_management_flutter/frontend/android/app/.cxx/Debug/2c42u132/x86_64/CMakeFiles/rebuild_cache.dir
