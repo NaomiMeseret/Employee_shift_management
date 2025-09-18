@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/domain/models/shift.dart';
+import 'package:employee_shift_management/domain/models/shift.dart';
 
 void main() {
   group('Shift Model', () {
