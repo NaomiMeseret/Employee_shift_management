@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../widgets/admin_navigation_bar.dart';
 import '../../widgets/admin_header.dart';
-import '../../../application/providers/admin_providers.dart';
 import '../../../domain/models/attendance.dart';
-import '../../../domain/entities/shift.dart';
 
 class AdminAttendanceScreen extends ConsumerWidget {
   const AdminAttendanceScreen({Key? key}) : super(key: key);
@@ -153,7 +151,7 @@ Widget build(BuildContext context, WidgetRef ref) {
   scrollDirection: Axis.horizontal,
   child: DataTable(
                     columnSpacing: 16,
-                    headingRowColor: MaterialStateProperty.resolveWith<Color?>((states) => Colors.blue[50]),
+                    headingRowColor: WidgetStateProperty.resolveWith<Color?>((states) => Colors.blue[50]),
                     columns: const [
                       DataColumn(label: Text('Employee Name', style: TextStyle(fontWeight: FontWeight.bold))),
                       DataColumn(label: Text('Employee ID', style: TextStyle(fontWeight: FontWeight.bold))),
@@ -163,7 +161,7 @@ Widget build(BuildContext context, WidgetRef ref) {
                     rows: List.generate(records.length, (i) {
                       final record = records[i];
                       return DataRow(
-                        color: MaterialStateProperty.resolveWith<Color?>((states) => i % 2 == 0 ? Colors.grey[100] : Colors.white),
+                        color: WidgetStateProperty.resolveWith<Color?>((states) => i % 2 == 0 ? Colors.grey[100] : Colors.white),
                         cells: [
                           DataCell(Text(record.employeeName)),
                           DataCell(Text(record.employeeId.toString())),

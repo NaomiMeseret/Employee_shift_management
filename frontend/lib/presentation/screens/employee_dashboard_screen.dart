@@ -95,11 +95,11 @@ class _EmployeeDashboardScreenState extends ConsumerState<EmployeeDashboardScree
                     }
                   }),
                   // Attendance Tab
-                  AttendanceTab(),
+                  const AttendanceTab(),
                   // Team Tab
-                  TeamTab(),
+                  const TeamTab(),
                   // Profile Tab
-                  ProfileTab(),
+                  const ProfileTab(),
                 ],
               ),
             ),
@@ -195,11 +195,11 @@ class _ShiftsTabState extends ConsumerState<_ShiftsTab> {
     print('--- SHIFT DEBUG ---');
     print('All shift dates from backend:');
     for (var shift in widget.shiftState.shifts) {
-      print('  shift.date: ' + shift.date.toString());
+      print('  shift.date: ${shift.date}');
     }
-    print('Grouped shift keys: ' + shiftsByDate.keys.join(', '));
-    print('Selected date string: ' + selectedDateStr);
-    print('Shifts for selected date count: ' + shiftsForSelectedDate.length.toString());
+    print('Grouped shift keys: ${shiftsByDate.keys.join(', ')}');
+    print('Selected date string: $selectedDateStr');
+    print('Shifts for selected date count: ${shiftsForSelectedDate.length}');
     print('--------------------');
 
     return SingleChildScrollView(
@@ -394,7 +394,7 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
       final user = ref.read(authProvider).user;
       if (user != null) {
         ref.read(shiftProvider.notifier).fetchShifts(user.id);
-        ref.read(attendanceProvider.notifier).fetchAttendance(user.id);
+        ref.read(attendanceProvider.notifier).fetchAttendanceRecords(user.id);
       }
     });
   }
@@ -467,7 +467,7 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
                       ? null
                       : () async {
                           try {
-                            await ref.read(attendanceProvider.notifier).clockIn(user.id, selectedShiftId!);
+                            await ref.read(attendanceProvider.notifier).clockIn(user.id);
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -509,7 +509,7 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
                       ? null
                       : () async {
                           try {
-                            await ref.read(attendanceProvider.notifier).clockOut(user.id, selectedShiftId!);
+                            await ref.read(attendanceProvider.notifier).clockOut(user.id);
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -565,7 +565,7 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${att.actionType} (${att.status})', style: const TextStyle(fontWeight: FontWeight.w500)),
+                            Text('${att.clockInTime != null ? "Clock In" : "Clock Out"} (${att.totalHours.toStringAsFixed(1)}h)', style: const TextStyle(fontWeight: FontWeight.w500)),
                             Text(att.date, style: const TextStyle(color: Colors.grey)),
                           ],
                         ),
@@ -577,7 +577,7 @@ class _AttendanceTabState extends ConsumerState<AttendanceTab> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            att.time,
+                            att.clockInTime != null ? att.clockInTime!.substring(11, 16) : att.clockOutTime!.substring(11, 16),
                             style: const TextStyle(color: Colors.white, fontSize: 12),
                           ),
                         ),
@@ -650,13 +650,13 @@ class _TeamTabState extends ConsumerState<TeamTab> {
                     trailing: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: employee.status?.toLowerCase() == 'active' 
+                        color: employee.status.toLowerCase() == 'active' 
                             ? const Color(0xFF2E5D47)
                             : Colors.grey,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        employee.status?.toLowerCase() == 'active' ? 'Active' : 'On Leave',
+                        employee.status.toLowerCase() == 'active' ? 'Active' : 'On Leave',
                         style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),

@@ -15,5 +15,11 @@ class UserResponseDto {
         isAdmin: json['employee']['isAdmin'] ?? false,
       );
 
-  User toDomain() => User(id: id, name: name, email: email, isAdmin: isAdmin);
+  User toDomain() => User(
+    id: id, 
+    name: name, 
+    email: email, 
+    isAdmin: isAdmin,
+    status: 'active', // Default status for logged in users
+  );
 } 

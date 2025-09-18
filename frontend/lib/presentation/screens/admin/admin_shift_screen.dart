@@ -61,16 +61,21 @@ class AdminShiftScreen extends ConsumerWidget {
                           child: SizedBox(
                             width: constraints.maxWidth,
                             child: DataTable(
-                              headingRowColor: MaterialStateProperty.all(kPrimaryGreen.withOpacity(0.1)),
+                              headingRowColor: WidgetStateProperty.all(kPrimaryGreen.withOpacity(0.1)),
                               columns: const [
                                 DataColumn(label: Text('Name')),
                                 DataColumn(label: Text('Shift')),
                                 DataColumn(label: Text('Actions')),
                               ],
                               rows: shifts.map<DataRow>((shift) {
+                                // Safely get employee name, handle both string and int IDs
+                                final employeeName = employeeMap[shift.employeeId] ?? 
+                                                  employeeMap[int.tryParse(shift.employeeId.toString())] ?? 
+                                                  'Unknown';
+                                
                                 return DataRow(
                                   cells: [
-                                    DataCell(Text(employeeMap[shift.employeeId] ?? 'Unknown')),
+                                    DataCell(Text(employeeName)),
                                     DataCell(Text(shift.shiftType)),
                                     DataCell(Row(
                                       children: [
@@ -81,6 +86,7 @@ class AdminShiftScreen extends ConsumerWidget {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) => AssignShiftForm(
+                                                  key: ValueKey('edit_shift_${shift.id}'),
                                                   shift: shift,
                                                 ),
                                               ),
@@ -94,7 +100,7 @@ class AdminShiftScreen extends ConsumerWidget {
                                               context: context,
                                               builder: (context) => AlertDialog(
                                                 title: const Text('Delete Shift'),
-                                                content: const Text('Are you sure you want to delete this shift?'),
+                                                content: const Text('Are you sure you want to delete this shift? This action cannot be undone.'),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () => Navigator.pop(context),
@@ -102,11 +108,12 @@ class AdminShiftScreen extends ConsumerWidget {
                                                   ),
                                                   TextButton(
                                                     onPressed: () async {
+                                                      final scaffoldMessenger = ScaffoldMessenger.of(context);
                                                       try {
-                                                        await ref.read(shiftsProvider.notifier).deleteShift(int.parse(shift.id));
+                                                        await ref.read(shiftsProvider.notifier).deleteShift(shift.id);
                                                         if (context.mounted) {
                                                           Navigator.pop(context);
-                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                          scaffoldMessenger.showSnackBar(
                                                             const SnackBar(
                                                               content: Text('Shift deleted successfully'),
                                                               backgroundColor: Colors.green,
@@ -116,15 +123,19 @@ class AdminShiftScreen extends ConsumerWidget {
                                                       } catch (e) {
                                                         if (context.mounted) {
                                                           Navigator.pop(context);
-                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                          scaffoldMessenger.showSnackBar(
                                                             SnackBar(
-                                                              content: Text('Error: $e'),
+                                                              content: Text('Error deleting shift: ${e.toString()}'),
                                                               backgroundColor: Colors.red,
+                                                              duration: const Duration(seconds: 5),
                                                             ),
                                                           );
                                                         }
                                                       }
                                                     },
+                                                    style: TextButton.styleFrom(
+                                                      foregroundColor: Colors.red,
+                                                    ),
                                                     child: const Text('Delete'),
                                                   ),
                                                 ],

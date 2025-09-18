@@ -29,7 +29,17 @@ class _AssignShiftFormState extends ConsumerState<AssignShiftForm> {
       _selectedEmployeeId = widget.shift!.employeeId.toString();
       _selectedShiftType = widget.shift!.shiftType;
       final dateVal = widget.shift!.date;
-      _selectedDate = (dateVal != null && dateVal.isNotEmpty) ? DateTime.tryParse(dateVal) : null;
+      if (dateVal.isNotEmpty) {
+        try {
+          _selectedDate = DateTime.tryParse(dateVal);
+          if (_selectedDate == null) {
+            // Try parsing date in a different format if the default parsing fails
+            _selectedDate = DateTime.tryParse(dateVal.split(' ')[0]);
+          }
+        } catch (e) {
+          debugPrint('Error parsing date: $e');
+        }
+      }
     }
   }
 
@@ -39,10 +49,14 @@ class _AssignShiftFormState extends ConsumerState<AssignShiftForm> {
   }
 
   Future<void> _submitForm() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
+
+    // Validate form
     if (_selectedEmployeeId == null) {
       setState(() {
         _isLoading = false;
@@ -50,22 +64,34 @@ class _AssignShiftFormState extends ConsumerState<AssignShiftForm> {
       });
       return;
     }
-    if (_selectedShiftType == null || _selectedDate == null) {
+    
+    if (_selectedShiftType == null) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Please select a shift type and date.';
+        _errorMessage = 'Please select a shift type.';
+      });
+      return;
+    }
+    
+    if (_selectedDate == null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Please select a date.';
       });
       return;
     }
     try {
+      // Format date as YYYY-MM-DD
+      final formattedDate = '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}';
+      
       if (widget.shift == null) {
         // Creating new shift
         await ref.read(shiftsProvider.notifier).addShift(
           Shift(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
-            employeeId: int.parse(_selectedEmployeeId!),
+            employeeId: int.tryParse(_selectedEmployeeId!) ?? 0,
             shiftType: _selectedShiftType!,
-            date: _selectedDate != null ? _selectedDate!.toIso8601String() : '',
+            date: formattedDate,
           ),
         );
       } else {
@@ -73,9 +99,9 @@ class _AssignShiftFormState extends ConsumerState<AssignShiftForm> {
         await ref.read(shiftsProvider.notifier).updateShift(
           Shift(
             id: widget.shift!.id,
-            employeeId: int.parse(_selectedEmployeeId!),
+            employeeId: int.tryParse(_selectedEmployeeId!) ?? 0,
             shiftType: _selectedShiftType!,
-            date: _selectedDate != null ? _selectedDate!.toIso8601String() : '',
+            date: formattedDate,
           ),
         );
       }

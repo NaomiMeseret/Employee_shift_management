@@ -32,6 +32,9 @@ class ShiftDto {
         employeeId: employeeId,
         date: date,
         shiftType: shiftType,
+        startTime: '09:00',
+        endTime: '17:00',
+        status: 'assigned',
         attendance: attendance,
       );
 } 
