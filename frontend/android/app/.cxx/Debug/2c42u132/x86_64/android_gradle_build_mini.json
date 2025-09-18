@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/naomi/Development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/naomi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/naomi/Desktop/Employee_shift_management_flutter/frontend/android/app/.cxx/Debug/2c42u132/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/naomi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/naomi/Desktop/Employee_shift_management_flutter/frontend/android/app/.cxx/Debug/2c42u132/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

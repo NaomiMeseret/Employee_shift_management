@@ -66,7 +66,7 @@ class AdminEmployeeScreen extends ConsumerWidget {
                       child: SizedBox(
                         width: constraints.maxWidth,
                         child: DataTable(
-                          headingRowColor: MaterialStateProperty.all(kPrimaryGreen.withOpacity(0.1)),
+                          headingRowColor: WidgetStateProperty.all(kPrimaryGreen.withOpacity(0.1)),
                           columns: const [
                             DataColumn(label: Text('Name')),
                             DataColumn(label: Text('ID')),
@@ -226,36 +226,49 @@ class AdminEmployeeScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) {
-        return Consumer(
-          builder: (context, ref, child) {
-            return AlertDialog(
-              title: const Text('Delete Employee'),
-              content: Text('Are you sure you want to delete ${employee.name}?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    try {
-                      await ref.read(employeesProvider.notifier).deleteEmployee(employee.id);
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.toString())),
-                        );
-                      }
-                    }
-                  },
-                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            );
-          },
+        final ref = ProviderScope.containerOf(context);
+        return AlertDialog(
+          title: const Text('Delete Employee'),
+          content: Text('Are you sure you want to delete ${employee.name}? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                try {
+                  await ref.read(employeesProvider.notifier).deleteEmployee(employee.id);
+                  if (context.mounted) {
+                    scaffoldMessenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Employee deleted successfully'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(
+                        content: Text('Error deleting employee: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 5),
+                      ),
+                    );
+                  }
+                }
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: const Text('Delete'),
+            ),
+          ],
         );
       },
     );
   }
-} 
+}

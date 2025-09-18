@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/domain/models/attendance.dart';
+import 'package:employee_shift_management/domain/models/attendance.dart';
 
 void main() {
   group('Attendance Model', () {

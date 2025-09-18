@@ -1,29 +1,32 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/user.dart';
 import '../../infrastructure/repositories_impl/auth_repository_impl.dart';
-import '../../application/use_cases/login_use_case.dart';
-import '../../application/use_cases/signup_use_case.dart';
 import 'auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier() : super(AuthState.initial());
-  final _loginUseCase = LoginUseCase(AuthRepositoryImpl());
-  final _signupUseCase = SignupUseCase(AuthRepositoryImpl());
+  final _authRepository = AuthRepositoryImpl();
 
   Future<void> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final user = await _loginUseCase(email: email, password: password);
-      state = state.copyWith(isLoading: false, user: user, error: null);
+      final user = await _authRepository.login(email: email, password: password);
+      state = state.copyWith(isLoading: false, user: user);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
-  Future<void> signup(String name, String email, String password, String id) async {
+  Future<void> signup({
+    required String name,
+    required String email,
+    required String password,
+    required String id,
+    required String phone,
+    required String position,
+  }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final user = await _signupUseCase(
+      final user = await _authRepository.signup(
         name: name,
         email: email,
         password: password,

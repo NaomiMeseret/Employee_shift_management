@@ -27,9 +27,9 @@ class AdminApiService {
     final headers = {'Content-Type': 'application/json'};
     final body = json.encode(employee.toJson());
     print('--- CREATE EMPLOYEE DEBUG ---');
-    print('URL: ' + url);
-    print('Headers: ' + headers.toString());
-    print('Body: ' + body);
+    print('URL: $url');
+    print('Headers: $headers');
+    print('Body: $body');
     final response = await http.post(
       Uri.parse(url),
       headers: headers,
@@ -71,7 +71,7 @@ class AdminApiService {
 
   // Shift endpoints
   Future<List<Shift>> getShifts() async {
-    final response = await http.get(Uri.parse('${baseUrl}/assignedShift'));
+    final response = await http.get(Uri.parse('$baseUrl/assignedShift'));
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => Shift.fromJson(json)).toList();
@@ -98,9 +98,9 @@ class AdminApiService {
     final headers = {'Content-Type': 'application/json'};
     final body = json.encode(shift.toJson());
     print('--- UPDATE SHIFT DEBUG ---');
-    print('URL: ' + url);
-    print('Headers: ' + headers.toString());
-    print('Body: ' + body);
+    print('URL: $url');
+    print('Headers: $headers');
+    print('Body: $body');
     final response = await http.put(
       Uri.parse(url),
       headers: headers,
