@@ -22,7 +22,7 @@ This practical mobile application demonstrates **cross-platform mobile developme
 
 ### Employee Features
 | Profile Management | Settings & Preferences | Attendance History |
-|-------------------|----------------------|----------------|-------------------|
+|-------------------|----------------------|----------------|
 | ![Profile](docs/screenshots/profile.png) | ![Settings](docs/screenshots/settings.png) | ![History](docs/screenshots/attendance-history.png) |
 
 ### Admin Features
