@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../config/app_theme.dart';
-import '../../widgets/custom_app_bar.dart';
-import '../../widgets/custom_button.dart';
 import '../../../domain/entities/user.dart';
 import '../../../infrastructure/repositories_impl/auth_repository_impl.dart';
+import '../../../infrastructure/services/admin_api_service.dart';
+import '../../../config/app_config.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_app_bar.dart';
+import '../../../config/app_theme.dart';
 
 class AdminUserManagementScreen extends ConsumerStatefulWidget {
   const AdminUserManagementScreen({Key? key}) : super(key: key);
@@ -17,28 +19,38 @@ class _AdminUserManagementScreenState extends ConsumerState<AdminUserManagementS
   List<User> pendingUsers = [];
   bool isLoading = true;
   final AuthRepositoryImpl _authRepository = AuthRepositoryImpl();
+  late final AdminApiService _apiService;
 
   @override
   void initState() {
     super.initState();
+    _apiService = AdminApiService(baseUrl: AppConfig.apiBaseUrl);
     _loadPendingUsers();
   }
 
   Future<void> _loadPendingUsers() async {
     setState(() => isLoading = true);
     try {
-      // This would need to be implemented in the repository
-      // For now, we'll simulate pending users
-      await Future.delayed(const Duration(seconds: 1));
+      final pendingUsersData = await _apiService.getPendingUsers();
+      final users = pendingUsersData.map((userData) => User(
+        id: userData['id']?.toString() ?? '',
+        name: userData['name']?.toString() ?? '',
+        email: userData['email']?.toString() ?? '',
+        isAdmin: userData['isAdmin'] ?? false,
+        phone: userData['phone']?.toString(),
+        position: userData['position']?.toString(),
+        status: userData['status']?.toString() ?? 'pending',
+      )).toList();
+      
       setState(() {
-        pendingUsers = []; // Will be populated from API
+        pendingUsers = users;
         isLoading = false;
       });
     } catch (e) {
       setState(() => isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load pending users')),
+          SnackBar(content: Text('Failed to load pending users: $e')),
         );
       }
     }
@@ -55,11 +67,11 @@ class _AdminUserManagementScreenState extends ConsumerState<AdminUserManagementS
         ),
       );
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      // Call actual API
+      await _apiService.approveUser(user.id);
 
       if (mounted) {
-        Navigator.pop(context); // Close loading dialog
+        Navigator.pop(context); 
         setState(() {
           pendingUsers.removeWhere((u) => u.id == user.id);
         });
@@ -69,9 +81,9 @@ class _AdminUserManagementScreenState extends ConsumerState<AdminUserManagementS
       }
     } catch (e) {
       if (mounted) {
-        Navigator.pop(context); // Close loading dialog
+        Navigator.pop(context); 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to approve user')),
+          SnackBar(content: Text('Failed to approve user: $e')),
         );
       }
     }
@@ -88,8 +100,8 @@ class _AdminUserManagementScreenState extends ConsumerState<AdminUserManagementS
         ),
       );
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      // Call actual API
+      await _apiService.rejectUser(user.id);
 
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
@@ -104,7 +116,7 @@ class _AdminUserManagementScreenState extends ConsumerState<AdminUserManagementS
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to reject user')),
+          SnackBar(content: Text('Failed to reject user: $e')),
         );
       }
     }
