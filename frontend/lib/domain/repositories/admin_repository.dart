@@ -13,7 +13,7 @@ abstract class AdminRepository {
   Future<List<Shift>> getShifts();
   Future<Shift> createShift(Shift shift);
   Future<Shift> updateShift(Shift shift);
-  Future<void> deleteShift(int id);
+  Future<void> deleteShift(String id);
 
   // Attendance operations
   Future<List<Attendance>> getAttendance();

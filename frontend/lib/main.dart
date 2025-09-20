@@ -52,6 +52,8 @@ class ShiftMasterApp extends StatelessWidget {
     return MaterialApp(
       title: 'ShiftMaster - Employee Management',
       debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: false,
+      showSemanticsDebugger: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,

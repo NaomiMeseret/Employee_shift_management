@@ -92,7 +92,7 @@ class AdminRepositoryImpl implements AdminRepository {
   }
 
   @override
-  Future<void> deleteShift(int id) async {
+  Future<void> deleteShift(String id) async {
     try {
       await _apiService.deleteShift(id);
     } catch (e) {

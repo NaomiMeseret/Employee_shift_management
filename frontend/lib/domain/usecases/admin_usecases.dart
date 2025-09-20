@@ -38,7 +38,7 @@ class AdminUseCases {
     return await repository.updateShift(shift);
   }
 
-  Future<void> deleteShift(int id) async {
+  Future<void> deleteShift(String id) async {
     await repository.deleteShift(id);
   }
 
