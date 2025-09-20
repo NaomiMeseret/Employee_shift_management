@@ -37,7 +37,7 @@ class AdminRepositoryImpl implements AdminRepository {
   }
 
   @override
-  Future<void> deleteEmployee(int id) async {
+  Future<void> deleteEmployee(String id) async {
     try {
       await _apiService.deleteEmployee(id);
     } catch (e) {
