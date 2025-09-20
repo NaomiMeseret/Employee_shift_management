@@ -3,15 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF2E5D47);
-  static const Color secondaryColor = Color(0xFF4A90A4);
-  static const Color accentColor = Color(0xFF87CEEB);
-  static const Color backgroundColor = Color(0xFFF8F9FA);
+  static const Color secondaryColor = Color(0xFF4A7C59);
+  static const Color accentColor = Color(0xFF7FB069);
+  static const Color backgroundColor = Color(0xFFF5F5F5);
   static const Color surfaceColor = Color(0xFFFFFFFF);
-  static const Color errorColor = Color(0xFFE74C3C);
-  static const Color successColor = Color(0xFF27AE60);
-  static const Color warningColor = Color(0xFFF39C12);
-  static const Color textPrimary = Color(0xFF2C3E50);
-  static const Color textSecondary = Color(0xFF7F8C8D);
+  static const Color errorColor = Color(0xFFE53E3E);
+  static const Color successColor = Color(0xFF38A169);
+  static const Color warningColor = Color(0xFFED8936);
+  static const Color textPrimary = Color(0xFF2D3748);
+  static const Color textSecondary = Color(0xFF4A5568);
+  static const Color textLight = Color(0xFF718096);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -202,6 +203,7 @@ class AppColors {
   static const Color error = AppTheme.errorColor;
   static const Color success = AppTheme.successColor;
   static const Color warning = AppTheme.warningColor;
+  static const Color info = Color(0xFF3182CE);
   static const Color textPrimary = AppTheme.textPrimary;
   static const Color textSecondary = AppTheme.textSecondary;
   static const Color outline = Color(0xFFE0E0E0);
