@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../application/providers/admin_providers.dart';
 import '../../../domain/models/employee.dart';
+import '../../../config/app_theme.dart';
+import '../../widgets/enhanced_employee_card.dart';
+import '../../widgets/section_header.dart';
+import '../../widgets/loading_overlay.dart';
 import '../../widgets/admin_navigation_bar.dart';
 import '../../widgets/admin_header.dart';
 import 'employee_form.dart';
 
 const Color kPrimaryGreen = Color(0xFF2E5D47);
 
-class AdminEmployeeScreen extends ConsumerWidget {
+class AdminEmployeeScreen extends ConsumerStatefulWidget {
   const AdminEmployeeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AdminEmployeeScreen> createState() => _AdminEmployeeScreenState();
+}
+
+class _AdminEmployeeScreenState extends ConsumerState<AdminEmployeeScreen> {
+  @override
+  Widget build(BuildContext context) {
     final employeesAsync = ref.watch(employeesProvider);
 
     return WillPopScope(
@@ -33,74 +42,297 @@ class AdminEmployeeScreen extends ConsumerWidget {
         body: Column(
           children: [
             const AdminNavigationBar(currentIndex: 1),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: kPrimaryGreen,
-                      foregroundColor: Colors.white,
+            employeesAsync.when(
+              data: (employees) => SectionHeader(
+                title: 'Employee Management',
+                subtitle: 'Manage your team members and their information',
+                icon: Icons.people,
+                color: AppColors.primary,
+                itemCount: employees.length,
+                actionText: 'Add Member',
+                actionIcon: Icons.add,
+                onActionPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EmployeeForm(),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const EmployeeForm(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add Member'),
-                  ),
-                ],
+                  );
+                },
+              ),
+              loading: () => SectionHeader(
+                title: 'Employee Management',
+                subtitle: 'Loading employees...',
+                icon: Icons.people,
+                color: AppColors.primary,
+                actionText: 'Add Member',
+                actionIcon: Icons.add,
+                onActionPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EmployeeForm(),
+                    ),
+                  );
+                },
+              ),
+              error: (error, stack) => SectionHeader(
+                title: 'Employee Management',
+                subtitle: 'Error loading employees',
+                icon: Icons.people,
+                color: AppColors.error,
+                actionText: 'Add Member',
+                actionIcon: Icons.add,
+                onActionPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EmployeeForm(),
+                    ),
+                  );
+                },
               ),
             ),
             Expanded(
               child: employeesAsync.when(
-                data: (employees) => LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: constraints.maxWidth,
-                        child: DataTable(
-                          headingRowColor: WidgetStateProperty.all(kPrimaryGreen.withOpacity(0.1)),
-                          columns: const [
-                            DataColumn(label: Text('Name')),
-                            DataColumn(label: Text('ID')),
-                            DataColumn(label: Text('Actions')),
-                          ],
-                          rows: employees.map((employee) {
-                            return DataRow(
-                              cells: [
-                                DataCell(Text(employee.name)),
-                                DataCell(Text(employee.id.toString())),
-                                DataCell(
-                                  IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () {
-                                      _showDeleteConfirmation(context, employee);
-                                    },
-                                  ),
-                                ),
-                              ],
+                data: (employees) => employees.isEmpty
+                    ? _buildEmptyState()
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          ref.refresh(employeesProvider);
+                        },
+                        child: ListView.builder(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          itemCount: employees.length,
+                          itemBuilder: (context, index) {
+                            final employee = employees[index];
+                            return EnhancedEmployeeCard(
+                              employee: employee,
+                              onViewDetails: () => _showEmployeeDetails(context, employee),
+                              onEdit: () => _editEmployee(context, employee),
+                              onDelete: () => _showDeleteConfirmation(context, employee, ref),
                             );
-                          }).toList(),
+                          },
                         ),
                       ),
-                    );
-                  },
+                loading: () => const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Loading employees...'),
+                    ],
+                  ),
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stackTrace) => Center(
-                  child: Text('Error: ${error.toString()}'),
-                ),
+                error: (error, stackTrace) => _buildErrorState(error.toString(), ref),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Icon(
+              Icons.people_outline,
+              size: 64,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'No Employees Found',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Start by adding your first team member',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[500],
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EmployeeForm(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Add First Employee'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String error, WidgetRef ref) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.error.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppColors.error,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Something went wrong',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[500],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton.icon(
+            onPressed: () {
+              ref.refresh(employeesProvider);
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Try Again'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEmployeeDetails(BuildContext context, Employee employee) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Employee Details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDetailRow('Name', employee.name),
+            _buildDetailRow('ID', employee.id),
+            _buildDetailRow('Email', employee.email),
+            _buildDetailRow('Phone', employee.phone),
+            _buildDetailRow('Position', employee.position),
+            _buildDetailRow('Status', employee.status),
+            _buildDetailRow('Admin', employee.isAdmin ? 'Yes' : 'No'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  void _editEmployee(BuildContext context, Employee employee) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EmployeeForm(employee: employee),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, Employee employee, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Employee'),
+        content: Text('Are you sure you want to delete ${employee.name}? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await ref.read(employeesProvider.notifier).deleteEmployee(employee.id);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${employee.name} deleted successfully')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to delete employee: $e')),
+                  );
+                }
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }
@@ -212,7 +444,7 @@ class AdminEmployeeScreen extends ConsumerWidget {
                 title: const Text('Delete Employee', style: TextStyle(color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
-                  _showDeleteConfirmation(context, employee);
+                  _showDeleteConfirmation(context, employee, ref);
                 },
               ),
             ],
@@ -222,53 +454,4 @@ class AdminEmployeeScreen extends ConsumerWidget {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context, Employee employee) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final ref = ProviderScope.containerOf(context);
-        return AlertDialog(
-          title: const Text('Delete Employee'),
-          content: Text('Are you sure you want to delete ${employee.name}? This action cannot be undone.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                final scaffoldMessenger = ScaffoldMessenger.of(context);
-                try {
-                  await ref.read(employeesProvider.notifier).deleteEmployee(employee.id);
-                  if (context.mounted) {
-                    scaffoldMessenger.showSnackBar(
-                      const SnackBar(
-                        content: Text('Employee deleted successfully'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(
-                        content: Text('Error deleting employee: ${e.toString()}'),
-                        backgroundColor: Colors.red,
-                        duration: const Duration(seconds: 5),
-                      ),
-                    );
-                  }
-                }
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-              ),
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
