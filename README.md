@@ -277,7 +277,7 @@ Employee_shift_management_flutter/
 | Document                                     | Description                                | Status   |
 | -------------------------------------------- | ------------------------------------------ | -------- |
 | [👤 User Guide](docs/USER_GUIDE.md)          | Comprehensive user manual for all features | ✅ Ready |
-| [🔗 API Documentation](API_DOCUMENTATION.md) | Full REST API reference with examples      | ✅ Ready |
+| [🔗 API Documentation](docs/API_DOCUMENTATION.md) | Full REST API reference with examples      | ✅ Ready |
 
 ## 🎯 Complete User Workflows
 
