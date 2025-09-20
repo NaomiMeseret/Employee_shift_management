@@ -60,7 +60,7 @@ class AdminApiService {
     }
   }
 
-  Future<void> deleteEmployee(int id) async {
+  Future<void> deleteEmployee(String id) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/deleteEmployee/$id'),
     );

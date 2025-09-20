@@ -1,5 +1,5 @@
 class Employee {
-  final int id;
+  final String id;
   final String name;
   final String email;
   final String phone;
@@ -23,9 +23,7 @@ class Employee {
 
   factory Employee.fromJson(Map<String, dynamic> json) {
     return Employee(
-      id: json['id'] is int
-          ? json['id']
-          : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      id: json['id']?.toString() ?? '',
       name: json['name'] as String? ?? '',
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
@@ -52,7 +50,7 @@ class Employee {
   }
 
   Employee copyWith({
-    int? id,
+    String? id,
     String? name,
     String? email,
     String? phone,

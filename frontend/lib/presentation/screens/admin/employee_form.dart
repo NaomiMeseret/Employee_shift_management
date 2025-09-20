@@ -55,7 +55,7 @@ class _EmployeeFormState extends ConsumerState<EmployeeForm> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final employee = Employee(
-        id: int.tryParse(_idController.text) ?? 0,
+        id: _idController.text,
         name: _nameController.text,
         email: _emailController.text,
         phone: _phoneController.text,
@@ -104,13 +104,13 @@ class _EmployeeFormState extends ConsumerState<EmployeeForm> {
                   labelText: 'Employee ID',
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an employee ID';
                   }
-                  if (int.tryParse(value) == null) {
-                    return 'Employee ID must be a number';
+                  if (value.length < 2) {
+                    return 'Employee ID must be at least 2 characters';
                   }
                   return null;
                 },

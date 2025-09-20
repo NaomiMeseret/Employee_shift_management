@@ -7,7 +7,7 @@ abstract class AdminRepository {
   Future<List<Employee>> getEmployees();
   Future<Employee> createEmployee(Employee employee);
   Future<Employee> updateEmployee(Employee employee);
-  Future<void> deleteEmployee(int id);
+  Future<void> deleteEmployee(String id);
 
   // Shift operations
   Future<List<Shift>> getShifts();

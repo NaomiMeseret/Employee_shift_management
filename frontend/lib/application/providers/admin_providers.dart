@@ -68,18 +68,16 @@ class EmployeesNotifier extends StateNotifier<AsyncValue<List<Employee>>> {
     }
   }
 
-  Future<void> deleteEmployee(dynamic id) async {
+  Future<void> deleteEmployee(String id) async {
     try {
-      final idToDelete = id is String ? int.tryParse(id) ?? 0 : id;
-      await _useCases.deleteEmployee(idToDelete);
+      await _useCases.deleteEmployee(id);
       state.whenData((employees) {
         state = AsyncValue.data(
-          employees.where((e) => e.id != id.toString() && e.id != idToDelete).toList(),
+          employees.where((e) => e.id != id).toList(),
         );
       });
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-      rethrow; // Re-throw to show error in UI
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
     }
   }
 }

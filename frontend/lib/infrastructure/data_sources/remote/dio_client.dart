@@ -7,10 +7,15 @@ class DioClient {
   late final Dio dio;
 
   DioClient._internal() {
-    // Use different base URLs for web and mobile
-    String baseUrl = kIsWeb 
-        ? 'http://localhost:3000/api'  // For web
-        : 'http://10.0.2.2:3000/api';  // For Android emulator
+    // Use different base URLs for web, emulator, and physical device
+    String baseUrl;
+    if (kIsWeb) {
+      baseUrl = 'http://localhost:3000/api';  // For web
+    } else {
+      // For mobile: try emulator first, then physical device IP
+      baseUrl = 'http://192.168.1.6:3000/api';  // For physical device
+      // Alternative: 'http://10.0.2.2:3000/api' for Android emulator
+    }
 
     dio = Dio(
       BaseOptions(
