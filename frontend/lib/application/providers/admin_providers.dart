@@ -129,17 +129,16 @@ class ShiftsNotifier extends StateNotifier<AsyncValue<List<Shift>>> {
     }
   }
 
-  Future<void> deleteShift(dynamic id) async {
+  Future<void> deleteShift(String id) async {
     try {
-      final idToDelete = id is String ? int.tryParse(id) ?? 0 : id;
-      await _useCases.deleteShift(idToDelete);
+      await _useCases.deleteShift(id);
       state.whenData((shifts) {
         state = AsyncValue.data(
-          shifts.where((s) => s.id != id.toString() && int.tryParse(s.id) != idToDelete).toList(),
+          shifts.where((s) => s.id != id).toList(),
         );
       });
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
     }
   }
 }
