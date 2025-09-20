@@ -7,8 +7,6 @@ const connectDB = async () => {
     dns.setServers(['8.8.8.8', '8.8.4.4']);
 
     const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4,
@@ -18,7 +16,7 @@ const connectDB = async () => {
       retryReads: true
     };
 
-    const conn = await mongoose.connect(process.env.MONGO_URI, options);
+    const conn = await mongoose.connect(process.env.MONGODB_URI, options);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
     console.error('MongoDB connection error:', err);

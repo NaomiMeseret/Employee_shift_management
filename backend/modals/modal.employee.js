@@ -14,7 +14,7 @@ const employeeSchema = new mongoose.Schema(
       trim: true,
     },
     id: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
       trim: true,
@@ -40,8 +40,8 @@ const employeeSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "on leave"],
-      default: "inactive",
+      enum: ["active", "inactive", "pending", "on leave"],
+      default: "pending",
     },
     isAdmin: {
       type: Boolean,
