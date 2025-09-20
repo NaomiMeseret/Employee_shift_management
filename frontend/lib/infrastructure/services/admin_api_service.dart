@@ -13,12 +13,20 @@ class AdminApiService {
 
   // Employee endpoints
   Future<List<Employee>> getEmployees() async {
-    final response = await http.get(Uri.parse('$baseUrl${AppConfig.employeesEndpoint}'));
+    final url = '$baseUrl/employees';
+    print('--- GET EMPLOYEES DEBUG ---');
+    print('URL: $url');
+    
+    final response = await http.get(Uri.parse(url));
+    print('Status: ${response.statusCode}');
+    print('Response: ${response.body}');
+    print('-----------------------------');
+    
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => Employee.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load employees');
+      throw Exception('Failed to load employees: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -48,15 +56,30 @@ class AdminApiService {
   }
 
   Future<Employee> updateEmployee(Employee employee) async {
+    final url = '$baseUrl/updateEmployee/${employee.id}';
+    print('--- UPDATE EMPLOYEE DEBUG ---');
+    print('URL: $url');
+    print('Body: ${json.encode(employee.toJson())}');
+    
     final response = await http.put(
-      Uri.parse('$baseUrl${AppConfig.employeesEndpoint}/${employee.id}'),
+      Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(employee.toJson()),
     );
+    
+    print('Status: ${response.statusCode}');
+    print('Response: ${response.body}');
+    print('-----------------------------');
+    
     if (response.statusCode == 200) {
-      return Employee.fromJson(json.decode(response.body));
+      final responseData = json.decode(response.body);
+      if (responseData['employee'] != null) {
+        return Employee.fromJson(responseData['employee']);
+      } else {
+        return Employee.fromJson(responseData);
+      }
     } else {
-      throw Exception('Failed to update employee');
+      throw Exception('Failed to update employee: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -116,12 +139,18 @@ class AdminApiService {
     }
   }
 
-  Future<void> deleteShift(int id) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl${AppConfig.shiftsEndpoint}/$id'),
-    );
+  Future<void> deleteShift(String id) async {
+    final url = '$baseUrl/shift/$id';
+    print('--- DELETE SHIFT DEBUG ---');
+    print('URL: $url');
+    
+    final response = await http.delete(Uri.parse(url));
+    print('Status: ${response.statusCode}');
+    print('Response: ${response.body}');
+    print('-----------------------------');
+    
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete shift');
+      throw Exception('Failed to delete shift: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -176,6 +205,31 @@ class AdminApiService {
     );
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to assign shift: ${response.body}');
+    }
+  }
+
+  // User Management endpoints
+  Future<List<Map<String, dynamic>>> getPendingUsers() async {
+    final response = await http.get(Uri.parse('$baseUrl/pending'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.cast<Map<String, dynamic>>();
+    } else {
+      throw Exception('Failed to load pending users');
+    }
+  }
+
+  Future<void> approveUser(String userId) async {
+    final response = await http.put(Uri.parse('$baseUrl/approve/$userId'));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to approve user');
+    }
+  }
+
+  Future<void> rejectUser(String userId) async {
+    final response = await http.delete(Uri.parse('$baseUrl/reject/$userId'));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to reject user');
     }
   }
 } 
