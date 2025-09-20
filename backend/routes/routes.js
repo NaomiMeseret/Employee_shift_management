@@ -35,12 +35,12 @@ async function register(req, res) {
       email,
       id,
       password: hashedPassword,
-      profilePicture,
+      profilePicture: profilePicture || "default.jpg",
       phone,
       position,
       shift,
-      status,
-      isAdmin,
+      status: status || "pending", // New users need admin approval
+      isAdmin: isAdmin || false, // Default to false for security
     });
 
     const savedEmployee = await employee.save();
@@ -96,6 +96,20 @@ async function login(req, res) {
     const employee = await Employee.findOne({ email });
     if (!employee) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if user account is pending approval
+    if (employee.status === "pending") {
+      return res.status(403).json({ 
+        message: "Your account is pending admin approval. Please contact your administrator." 
+      });
+    }
+
+    // Check if user account is inactive
+    if (employee.status === "inactive") {
+      return res.status(403).json({ 
+        message: "Your account has been deactivated. Please contact your administrator." 
+      });
     }
 
     const isMatch = await bcrypt.compare(password, employee.password);
@@ -194,14 +208,23 @@ async function deleteEmployee(req, res) {
     if (!employee) {
       return res.status(404).json({ message: "Employee not found" });
     }
+    try {
+      await Shift.deleteMany({ 
+        $or: [
+          { employeeId: id },           // String ID
+          { employeeId: Number(id) },   // Numeric ID (if valid)
+          { employeeId: parseInt(id) }  // Parsed integer ID
+        ]
+      });
+    } catch (shiftError) {
+      console.log('Note: Could not delete shifts for employee:', id, shiftError.message);
+      // Continue with employee deletion even if shift deletion fails
+    }
 
-    // Delete all shifts for this employee
-    await Shift.deleteMany({ employeeId: Number(id) }); // Make sure types match
-    
-
-    return res.status(200).json({ message: "Employee and their shifts deleted successfully" });
+    return res.status(200).json({ message: "Employee deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error deleting employee", error });
+    console.error('Delete employee error:', error);
+    return res.status(500).json({ message: "Error deleting employee", error: error.message });
   }
 }
 
@@ -516,6 +539,106 @@ async function logout(req, res) {
   return res.status(200).json({ message: "Logout successful" });
 }
 
+// Get pending users for admin approval
+async function getPendingUsers(req, res) {
+  try {
+    const pendingUsers = await Employee.find({ status: "pending" }, "-password");
+    return res.status(200).json(pendingUsers);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error fetching pending users", error });
+  }
+}
+
+// Approve user by admin
+async function approveUser(req, res) {
+  const { id } = req.params;
+  
+  try {
+    const employee = await Employee.findOneAndUpdate(
+      { id },
+      { status: "active" },
+      { new: true }
+    );
+
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    return res.status(200).json({ 
+      message: "User approved successfully", 
+      employee: { ...employee.toObject(), password: undefined }
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error approving user", error });
+  }
+}
+
+// Reject user by admin
+async function rejectUser(req, res) {
+  const { id } = req.params;
+  
+  try {
+    const employee = await Employee.findOneAndDelete({ id });
+
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    return res.status(200).json({ message: "User rejected and removed successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error rejecting user", error });
+  }
+}
+
+// Create first admin user (for initial setup)
+async function createAdmin(req, res) {
+  const { name, email, id, password, phone, position } = req.body;
+
+  try {
+    // Check if any admin already exists
+    const existingAdmin = await Employee.findOne({ isAdmin: true });
+    if (existingAdmin) {
+      return res.status(400).json({ message: "Admin user already exists" });
+    }
+
+    // Check if email or id already exists
+    const existingEmployee = await Employee.findOne({
+      $or: [{ email }, { id }],
+    });
+    if (existingEmployee) {
+      return res.status(400).json({ message: "Email or ID already in use" });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    const admin = new Employee({
+      name,
+      email,
+      id,
+      password: hashedPassword,
+      profilePicture: "default.jpg",
+      phone,
+      position: position || "Administrator",
+      status: "active",
+      isAdmin: true,
+    });
+
+    const savedAdmin = await admin.save();
+    return res.status(201).json({ 
+      message: "Admin user created successfully", 
+      employee: { ...savedAdmin.toObject(), password: undefined }
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error creating admin user", error });
+  }
+}
+
 export {
   register,
   changePassword,
@@ -526,7 +649,7 @@ export {
   deleteEmployee,
   clockin,
   clockout,
-  assignShift, // ← Add this line
+  assignShift,
   getAssignedShift,
   getAllAssignedShifts,
   updateShift,
@@ -535,5 +658,9 @@ export {
   getAllEmployeesWithAttendance,
   singleAttendance,
   singleStatus,
-  logout, // ← Add this
+  logout,
+  getPendingUsers,
+  approveUser,
+  rejectUser,
+  createAdmin,
 };

@@ -20,7 +20,11 @@ import {
   logout,
   updateShift,
   deleteShift,
-  changePassword
+  changePassword,
+  getPendingUsers,
+  approveUser,
+  rejectUser,
+  createAdmin
 } from "./routes.js";
 
 
@@ -80,5 +84,11 @@ router.get("/status/:id", singleStatus);
 router.get("/attendance", getAllEmployeesWithAttendance); //works
 
 router.get("/attendance/:id", singleAttendance); //works
+
+// Admin user management routes
+router.get("/pending", getPendingUsers); // Get pending users for approval
+router.put("/approve/:id", approveUser); // Approve user
+router.delete("/reject/:id", rejectUser); // Reject user
+router.post("/createAdmin", createAdmin); // Create first admin user
 
 export default router;
