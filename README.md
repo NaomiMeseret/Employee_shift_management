@@ -176,15 +176,6 @@ flutter run
 - ✅ **Beautiful UI** - Gradient backgrounds, enhanced cards, and smooth animations
 - ✅ **Production Ready** - Comprehensive error handling and data validation
 
-### **🎓 Technical Skills Demonstrated**
-
-- **Mobile Development** - Flutter, Dart, Material Design 3, Riverpod
-- **Backend Development** - Node.js, Express.js, MongoDB, JWT Authentication
-- **UI/UX Design** - Professional interface design with enhanced components
-- **Database Design** - MongoDB schemas and data relationships
-- **Security** - Password encryption, input validation, secure authentication
-- **Architecture** - Clean Architecture, separation of concerns, maintainable code
-
 ---
 
 <p align="center">
